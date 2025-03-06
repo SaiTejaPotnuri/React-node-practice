@@ -1,0 +1,20 @@
+Node js & Express
+
+1. npm init -> to create package.json file
+2. creating http connection
+        const http = require("http");
+3. Creating server :
+        const server = http.createServer((req,res) =>{
+            console.log("server is running");
+            console.log(req.url," req method ",req.method);
+            res.setHeader("Content-Type", "text/html");
+            res.write("hello world");
+            res.end();
+        })
+
+4. Listen client or user requests
+        server.listen(3000)
+
+
+NodeMon :   
+    1. It is used for continuous running server even if you changed any code no need to stop the server and restart
