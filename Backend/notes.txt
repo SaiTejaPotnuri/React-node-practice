@@ -18,3 +18,28 @@ Node js & Express
 
 NodeMon :   
     1. It is used for continuous running server even if you changed any code no need to stop the server and restart
+    2. In package.json add code inside scripts like:
+                    "start": "nodemon app.js"
+
+
+Express :
+    1. It is framework used in node js to roboust the code in web and mobile applications
+    2. The initial setup of Express :
+                const express = require("express");
+                const app = express();
+                const port = 3000;
+                app.listen(port,() => console.log("server is running in port : ",port));
+
+    3. Middlewares :
+                1. Middleware in Node.js/Express is software that sits between
+                    the server request and response to perform specific functions like authentication, logging, or data processing.
+                2. middel ware is takes request from the user , each request from user takes one Middlewares
+                3. Each middle ware looks that if one middleware takes time meanwhile other request with middleware will execute
+                4. next() is a method that do execute the next middle ware if we not mention in firstmiddle ware it is not execte the next middleware
+
+                5. Sample code :
+                        app.post('/api/login',(req,res,next) =>{
+                                console.log("login api called",req.url);
+                                res.send("login api called");
+                                next();
+                        })

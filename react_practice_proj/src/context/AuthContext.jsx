@@ -6,6 +6,7 @@ import {
   onAuthStateChanged
 } from 'firebase/auth';
 import { firebaseAuth } from '../firebase/config';
+import axios from 'axios';
 
 /**
  * useContext will be used when you sharing same information to the different children or if children triggered some action and
@@ -49,6 +50,13 @@ export function AuthProvider({ children }) {
   }, []);
   
   const loginHandler = async (user) => {
+
+    axios.post("http://localhost:3000/api/login",{
+      userName : user.userName,
+      password : user.password
+    }).then(res => console.log(res.data,"From express")).catch(err => console.log(err));
+
+
     try {
       setError(null);
       const userCredential = await signInWithEmailAndPassword(firebaseAuth, user.userName, user.password);
@@ -62,6 +70,8 @@ export function AuthProvider({ children }) {
       setError(err.message);
       throw err;
     }
+
+
   };
   
   const logoutHandler = async () => {
