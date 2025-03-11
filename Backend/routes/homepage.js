@@ -1,9 +1,7 @@
 const express = require("express");
+const  ProductController  = require("../controllers/ProductController");
 const router = express.Router();
 
-router.get('/api/home', (req, res) => {
-    console.log("home api called", req.url);
-    res.send("home api called");
-});
+router.get('/api/home', ProductController.HomePage);
 
 module.exports = router;
