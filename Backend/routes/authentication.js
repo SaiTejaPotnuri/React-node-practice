@@ -1,6 +1,8 @@
 const express = require("express");
 const { AuthController}  = require("../controllers/AuthController");
 const  { validateLoginInput }  = require("../middleware/authMiddleWare")
+const { VarifyTokenController} = require("../controllers/VerifyTokenController");
+
 
 const router = express.Router();
 
@@ -8,5 +10,7 @@ const router = express.Router();
    will be executed , middlewares are used to add gateway before the service bussiness logic should touch  */
 
 router.post('/api/login',validateLoginInput,AuthController);
+
+router.get("/api/verify-token",VarifyTokenController);
 
 module.exports = router;

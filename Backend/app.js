@@ -25,9 +25,17 @@ const cors = require('cors');
 const app = express();
 const port = 3000;
 app.use(express.json());
-app.use(cors()); // Add CORS middleware
+
+
+app.use(cors({
+    origin: 'http://localhost:5173', // Or your frontend origin or '*'
+    methods: 'GET,HEAD,PUT,PATCH,POST,DELETE,OPTIONS',
+    allowedHeaders: ['Content-Type', 'authorization'],
+    credentials: true, // If you need cookies
+}));
 
 const routes = require("./routes/mainroute");
+const db = require("./utils/db.connection");
 
 routes.forEach(route => app.use(route));
 

@@ -1,22 +1,39 @@
-exports.AuthController = (req, res) => {
+
+const bcrypt = require('bcrypt');
+const pool = require("../utils/db.connection");
+const jwt = require('jsonwebtoken');
+exports.AuthController = async (req, res) => {
     const { userName, password } = req.body;
-    const token = JSON.stringify(userName);
-    console.log("Came here in bussiness logic")
-    if(isValidUser(userName, password)){     
-        res.json({ 
-            success : true,
-            token : token,
-            message : "login successfull",
-            user : {
-                name : userName
-            }
-        });
-    }else{
-        res.status(400).json({
+        
+        let [rows,fields] = await pool.execute("select * from users where username = ?",[userName]);
+        let user = rows[0]
+
+       if(!user){
+       return  res.status(400).json({ 
             success : false,
             message : "Bad request",
         })
-    }
+       }
+
+
+      const passwordMatch = await bcrypt.compare(password, user.password);
+    
+       if(!passwordMatch){
+        return res.status(400).json({
+            success : false,
+            message : "Invalid password , Please try again",
+        })
+       }
+       const token = jwt.sign({ id: user.userId,name : user.username }, "imaginnovate", { expiresIn: '1h' });
+        return res.status(200).json({ 
+            success : true,
+            token : token,
+            message : "logged in  successfully",
+            user : {
+                id : user.userId,
+                name : user.username
+            }
+        });
+    
 }
 
-let isValidUser = (userName, password) => userName == "testing@yopmail.com" && password == "Test@1234";

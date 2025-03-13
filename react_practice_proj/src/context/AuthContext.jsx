@@ -1,11 +1,4 @@
 import React, { useState, useEffect, createContext } from 'react';
-import { 
-  createUserWithEmailAndPassword,
-  signInWithEmailAndPassword,
-  signOut,
-  onAuthStateChanged
-} from 'firebase/auth';
-import { firebaseAuth } from '../firebase/config';
 import axios from 'axios';
 
 /**
@@ -16,7 +9,7 @@ import axios from 'axios';
 
 const AuthContext = createContext({
   isLoggedIn: false,
-  loginHandler: () => {},
+  loginHandler: async (user) => Promise.resolve(null),
   logoutHandler: () => {},
   user: null,
   error: null,
@@ -29,61 +22,89 @@ export function AuthProvider({ children }) {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
-  useEffect(() => {
-    const unsubscribe = onAuthStateChanged(firebaseAuth, (currentUser) => {
-      if (currentUser) {
-        setUser(currentUser);
-        // Get user token and store it
-        currentUser.getIdToken().then(token => {
-          localStorage.setItem("token", token);
-          setIsLoggedIn(true);
-        });
-      } else {
-        setUser(null);
-        localStorage.removeItem("token");
-        setIsLoggedIn(false);
-      }
-      setLoading(false);
-    });
+  const LOGIN_URL = "http://localhost:3000/api";
 
-    return () => unsubscribe();
+  const authAxios = axios.create({
+    baseURL: LOGIN_URL,
+  });
+
+
+  useEffect(() => {
+    const verifyToken = async () => {
+      const token = localStorage.getItem("token");
+
+      if(!token){
+        setLoading(false);
+        return
+      }
+
+      try{
+        const response = await authAxios.get(`${LOGIN_URL}/verify-token`, {
+          headers: {
+            "Authorization": `Bearer ${token}`,
+            "Content-Type": "application/json",
+          },
+        });
+
+
+        if (response.data.success) {
+          setUser(response.data.user);
+          setIsLoggedIn(true);
+        } else {
+          // Token is invalid
+          localStorage.removeItem("token");
+          setIsLoggedIn(false);
+          setUser(null);
+        }
+
+
+
+      }catch(err){
+        setError(err.message);
+        setIsLoggedIn(false);
+        setUser(null);
+        // throw err;
+      }finally {
+        setLoading(false);
+      }
+    }
+    verifyToken();
   }, []);
   
   const loginHandler = async (user) => {
 
-    axios.post("http://localhost:3000/api/login",{
-      userName : user.userName,
-      password : user.password
-    }).then(res => console.log(res.data,"From express")).catch(err => console.log(err));
-
-
+    console.log("came to login handler");
     try {
-      setError(null);
-      const userCredential = await signInWithEmailAndPassword(firebaseAuth, user.userName, user.password);
-      console.log(userCredential.user);
-      const token = await userCredential.user.getIdToken();
-      localStorage.setItem("token", token);
-      setIsLoggedIn(true);
-      setUser(userCredential.user);
-      return userCredential.user;
+      // setIsLoggedIn(true);
+      
+      const response = await axios.post(`${LOGIN_URL}/login`, {
+        userName: user.userName,
+        password: user.password
+      });
+      
+      if (response.data.success) {
+        setError(null);
+        localStorage.setItem("token", response.data.token);
+        setUser(response.data.user);
+        setIsLoggedIn(true);
+        return response.data.user;
+      } else {
+        setError(response.data.message || "Login failed");
+        setIsLoggedIn(false);
+        return null;
+      }
     } catch (err) {
-      setError(err.message);
-      throw err;
+      setIsLoggedIn(false);
+      setError(err.response?.data?.message || err.message || "An error occurred");
+      console.log(err.response?.data?.message || err.message);
+      return null;
     }
-
-
   };
   
   const logoutHandler = async () => {
-    try {
-      await signOut(firebaseAuth); // Fixed: using firebaseAuth instead of auth
       localStorage.removeItem("token");
       setIsLoggedIn(false);
       setUser(null);
-    } catch (err) {
-      setError(err.message);
-      throw err;
-    }
   };
   
   const contextValue = {

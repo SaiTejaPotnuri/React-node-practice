@@ -46,8 +46,12 @@ function Forms(props) {
     });
   };
 
-  let submitForm = (eve) => {
+  let submitForm = async (eve) => {
     // console.log("submit form event",eve);
+
+    
+    // the below we are calling preventDefault() to prevent the for make a default behaviour of the submit form to reload the page
+    eve.preventDefault();
     let user = {
       userName: userInput.userName,
       password: userInput.password,
@@ -55,17 +59,18 @@ function Forms(props) {
     // console.log("user details :",user)
     // props.submitForm(userInput.userName)
 
-    auth.loginHandler(user);
+    const isValidUser = await auth.loginHandler(user);
 
-    //clear all values of the form
-    updateUserInput({
-      userName: "",
-      password: "",
-    });
-    navigate("/dashboard", { replace: true });
+    if (isValidUser) {
+          //clear all values of the form
+      updateUserInput({
+        userName: "",
+        password: "",
+      });
+      navigate("/dashboard", { replace: true });
+    }
 
-    // the below we are calling preventDefault() to prevent the for make a default behaviour of the submit form to reload the page
-    eve.preventDefault();
+
   };
 
   // for 2 way binding we will assign state value to the form value like as userName and password
