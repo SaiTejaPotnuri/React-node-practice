@@ -7,6 +7,7 @@ import { useLocation } from "react-router-dom";
 import useHttp from "../custom-hooks/use-http";
 import { useDispatch, useSelector } from "react-redux";
 import { deleteProduct } from "../store/productSlice";
+import axios from "axios";
 
 function ProductList() {
   // LEARNING EXAMPLE: Multiple state management approaches
@@ -16,6 +17,15 @@ function ProductList() {
   // 3. API (for initial data & synchronization)
 
   const useHttpHook = useHttp();
+  const  BASE_URL = "http://localhost:3000/api";
+  const authAxios = axios.create({
+        baseURL: BASE_URL,
+        headers:{
+          "Authorization": `Bearer ${localStorage.getItem("token")}`,
+          "Content-Type": "application/json",
+        }
+      });
+  
   const productsCtx = useContext(ProductsContext);
   const location = useLocation();
   const isProductPage = location.pathname.includes("list_products");
@@ -69,12 +79,12 @@ function ProductList() {
       setIsLoading(true);
       console.log("Fetching products from API...");
       try {
-        const response = await useHttpHook.fetchData("/products");
-        if (response !== null) {
-          const list = Object.entries(response).map(([key, value]) => ({
+        const response = await authAxios.get(`/all-products`);
+        if(response.data.success){
+          const list = Object.entries(response.data.products).map(([key, value]) => ({
             ...value,
-            id: key,
           }));
+         // console.log(list,"list");
           setFbProducts(list);
 
           // IMPROVEMENT: Only update if we don't have products already
@@ -82,9 +92,10 @@ function ProductList() {
           if (masterProducts.length === 0) {
             syncProductsData(list);
           }
-        } else {
+        }else {
           setIsLoading(false);
         }
+
       } catch (error) {
         console.error("Error fetching products:", error);
         setIsLoading(false);
@@ -144,8 +155,7 @@ function ProductList() {
       });
 
       // Delete from backend
-      await useHttpHook.deleteData(`/products`, delProduct.id);
-
+      await authAxios.delete(`/products/${delProduct.pId}`);
       // Update context
       productsCtx.onDeleteProduct(delProduct);
 
@@ -159,6 +169,7 @@ function ProductList() {
       // Reset delete modal
       setShowDelModel(false);
       setDelProduct({});
+
     } catch (error) {
       console.error("Error deleting product:", error);
     }

@@ -4,5 +4,6 @@ module.exports = {
     USER: "root",
     PASSWORD: "Test@1234",
     DB: "express-db",
-    port: 3306
+    port: 3306,
+    dialect : "mysql"
   };

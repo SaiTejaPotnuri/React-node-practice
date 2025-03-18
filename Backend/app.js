@@ -36,6 +36,7 @@ app.use(cors({
 
 const routes = require("./routes/mainroute");
 const db = require("./utils/db.connection");
+const dbSequelize = require("./models/sequelizeModelIndex");
 
 routes.forEach(route => app.use(route));
 
@@ -47,5 +48,5 @@ app.use('/', (req, res) => {
 
 
 
-app.listen(port,() => console.log("server is running in port : ",port));
+app.listen(port, () => console.log("server is running in port : ", port));
 

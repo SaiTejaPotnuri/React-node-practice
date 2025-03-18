@@ -3,12 +3,17 @@ import ProductsContext from "../context/ProductsContext";
 import useHttp from "../custom-hooks/use-http";
 import { useDispatch } from "react-redux";
 import {addProduct} from '../store/productSlice';
+import axios from 'axios';
 
 
 function CreateProduct(props){
 
+    const  BASE_URL = "http://localhost:3000/api";
+    const authAxios = axios.create({
+        baseURL: BASE_URL,
+      });
+
     let dispatch = useDispatch();
-    let useHttpHook = useHttp();
     let page = useContext(ProductsContext);
     let [product,setProduct] = useState({
         pName : "",
@@ -21,9 +26,9 @@ function CreateProduct(props){
    let  addNewProduct = async (eve) =>{
     eve.preventDefault();
         let item = {
-            pName : product?.pName,
-            pPrice : Number(product?.pPrice),
-            pDesc : product?.pDesc,
+            name : product?.pName,
+            description : product?.pDesc,
+            price : Number(product?.pPrice),
             isAvailable : Boolean(product?.isAvailable)
         }
         // props.newProduct(item);
@@ -35,33 +40,21 @@ function CreateProduct(props){
         // })
 
 
-        // fetch('https://react-practice-01-832c4-default-rtdb.firebaseio.com/products.json',{
-        //     method: 'POST',
-        //     body: JSON.stringify(item),
-        //     headers: {
-        //         'Content-Type': 'application/json'
-        //     }
-        // }).then((res) =>res.json()).then((res) =>{
+     
 
-        //     item.id = res.name
-        //     page.onAddProduct(item);
+        // we use below cod for handling json data
+        // const response = await useHttpHook.createData(`${BASE_URL}/products`,item);
 
-        //     // return res.json();
-        // }).catch((err) => {
-        //     console.log(err);
-        // })
+        const response = await authAxios.post(`${BASE_URL}/products`,item,{ headers: {
+            "Authorization": `Bearer ${localStorage.getItem("token")}`,
+            "Content-Type": "application/json",
+          },});
 
-
-        const response = await useHttpHook.createData('/products', item);
-        console.log(response,"from create");
-
-        if(response !== null){
+        if(response.data.success){
             item.id = response.name;
             page.onAddProduct(item);
             dispatch(addProduct(item));
         }
-
-
 
     }
 

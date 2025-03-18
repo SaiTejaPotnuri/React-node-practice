@@ -1,6 +1,6 @@
 // utils/db.connection.js
 const mysql = require('mysql2/promise');
-const dbConfig = require('../config/db.config');
+const dbConfig = require('../config/db.config');4
 
 // Create a connection pool
 const pool = mysql.createPool({

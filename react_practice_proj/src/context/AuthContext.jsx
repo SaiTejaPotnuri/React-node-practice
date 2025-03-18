@@ -39,24 +39,26 @@ export function AuthProvider({ children }) {
       }
 
       try{
-        const response = await authAxios.get(`${LOGIN_URL}/verify-token`, {
+       await authAxios.get(`${LOGIN_URL}/verify-token`, {
           headers: {
-            "Authorization": `Bearer ${token}`,
+            "Authorization": `Bearer ${localStorage.getItem("token")}`,
             "Content-Type": "application/json",
           },
-        });
-
-
-        if (response.data.success) {
-          setUser(response.data.user);
-          setIsLoggedIn(true);
-        } else {
-          // Token is invalid
+        }).then((res) => {
+          if (res.data.success) {
+            setUser(res.data.user);
+            setIsLoggedIn(true);
+          } else {
+            // Token is invalid
+            localStorage.removeItem("token");
+            setIsLoggedIn(false);
+            setUser(null);
+          }
+        }).catch((err) => {
           localStorage.removeItem("token");
           setIsLoggedIn(false);
           setUser(null);
-        }
-
+        });
 
 
       }catch(err){
