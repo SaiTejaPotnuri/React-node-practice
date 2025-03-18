@@ -4,10 +4,10 @@ import { useEffect, useState, useContext, useMemo } from "react";
 import "./Products.css";
 import ProductsContext from "../context/ProductsContext";
 import { useLocation } from "react-router-dom";
-import useHttp from "../custom-hooks/use-http";
 import { useDispatch, useSelector } from "react-redux";
 import { deleteProduct } from "../store/productSlice";
 import axios from "axios";
+import axiosHook from "../custom-hooks/axios-hook";
 
 function ProductList() {
   // LEARNING EXAMPLE: Multiple state management approaches
@@ -16,16 +16,8 @@ function ProductList() {
   // 2. Redux Store (for persistent state)
   // 3. API (for initial data & synchronization)
 
-  const useHttpHook = useHttp();
-  const  BASE_URL = "http://localhost:3000/api";
-  const authAxios = axios.create({
-        baseURL: BASE_URL,
-        headers:{
-          "Authorization": `Bearer ${localStorage.getItem("token")}`,
-          "Content-Type": "application/json",
-        }
-      });
-  
+  const {fetchData, deleteData} = axiosHook();
+
   const productsCtx = useContext(ProductsContext);
   const location = useLocation();
   const isProductPage = location.pathname.includes("list_products");
@@ -43,11 +35,10 @@ function ProductList() {
   const [showDelModel, setShowDelModel] = useState(false);
   const [delProduct, setDelProduct] = useState({});
   const [searchProductkey, setSearchProductKey] = useState("");
-  const [fbProducts, setFbProducts] = useState([]);
 
-  // IMPROVEMENT: Single function to handle data synchronization
+
   const syncProductsData = (newData) => {
-    if (newData && Array.isArray(newData) && newData.length > 0) {
+    if (newData && Array.isArray(newData)) {
       console.log("Syncing product data:", newData.length, "products");
       setMasterProducts(newData);
       setIsLoading(false);
@@ -75,34 +66,32 @@ function ProductList() {
 
   // Fetch products from API on initial load
   useEffect(() => {
-    const getProducts = async () => {
-      setIsLoading(true);
-      console.log("Fetching products from API...");
-      try {
-        const response = await authAxios.get(`/all-products`);
-        if(response.data.success){
-          const list = Object.entries(response.data.products).map(([key, value]) => ({
-            ...value,
-          }));
-         // console.log(list,"list");
-          setFbProducts(list);
-
-          // IMPROVEMENT: Only update if we don't have products already
-          // or if API has more up-to-date data
-          if (masterProducts.length === 0) {
-            syncProductsData(list);
-          }
-        }else {
-          setIsLoading(false);
-        }
-
-      } catch (error) {
-        console.error("Error fetching products:", error);
-        setIsLoading(false);
-      }
-    };
+    
     getProducts();
   }, []);
+
+
+  const getProducts = async () => {
+    setIsLoading(true);
+    console.log("Fetching products from API...");
+    try {
+      const response = await fetchData(`/all-products`)
+      if(response.success){
+        const list = Object.entries(response.products).map(([key, value]) => ({
+          ...value,
+        }));
+        syncProductsData(list);
+        setIsLoading(false);
+
+      }else {
+        setIsLoading(false);
+      }
+
+    } catch (error) {
+      console.error("Error fetching products:", error);
+      setIsLoading(false);
+    }
+  };
 
   // Filter products based on filterState - doesn't modify master list
   const filteredProducts = useMemo(() => {
@@ -155,7 +144,10 @@ function ProductList() {
       });
 
       // Delete from backend
-      await authAxios.delete(`/products/${delProduct.pId}`);
+     const response = await deleteData(`/products`,delProduct.pId);
+     
+     if(response.success){
+        
       // Update context
       productsCtx.onDeleteProduct(delProduct);
 
@@ -165,10 +157,13 @@ function ProductList() {
       } else if (delProduct.pId) {
         dispatch(deleteProduct(delProduct.pId));
       }
+     }
+
 
       // Reset delete modal
       setShowDelModel(false);
       setDelProduct({});
+      getProducts();
 
     } catch (error) {
       console.error("Error deleting product:", error);
@@ -241,6 +236,7 @@ function ProductList() {
             {!isLoading && displayProducts.length === 0 && (
               <li className="list-group-item">No products found</li>
             )}
+
 
             {!isLoading &&
               displayProducts.length > 0 &&

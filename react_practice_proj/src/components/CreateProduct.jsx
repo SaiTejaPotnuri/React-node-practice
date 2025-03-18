@@ -1,18 +1,11 @@
 import { useContext, useState  } from "react";
 import ProductsContext from "../context/ProductsContext";
-import useHttp from "../custom-hooks/use-http";
 import { useDispatch } from "react-redux";
 import {addProduct} from '../store/productSlice';
-import axios from 'axios';
+import axiosHook from '../custom-hooks/axios-hook';
 
 
 function CreateProduct(props){
-
-    const  BASE_URL = "http://localhost:3000/api";
-    const authAxios = axios.create({
-        baseURL: BASE_URL,
-      });
-
     let dispatch = useDispatch();
     let page = useContext(ProductsContext);
     let [product,setProduct] = useState({
@@ -21,7 +14,7 @@ function CreateProduct(props){
         pDesc : "",
         isAvailable : false
     })
-
+    const {addNewData} = axiosHook();
 
    let  addNewProduct = async (eve) =>{
     eve.preventDefault();
@@ -45,12 +38,9 @@ function CreateProduct(props){
         // we use below cod for handling json data
         // const response = await useHttpHook.createData(`${BASE_URL}/products`,item);
 
-        const response = await authAxios.post(`${BASE_URL}/products`,item,{ headers: {
-            "Authorization": `Bearer ${localStorage.getItem("token")}`,
-            "Content-Type": "application/json",
-          },});
+          const response = await addNewData('/products',item);
 
-        if(response.data.success){
+        if(response.success){
             item.id = response.name;
             page.onAddProduct(item);
             dispatch(addProduct(item));
