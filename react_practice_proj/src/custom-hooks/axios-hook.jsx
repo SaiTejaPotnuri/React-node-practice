@@ -1,7 +1,7 @@
 import { useState, useCallback } from 'react';
 import axios from 'axios';
 
-const axiosHook = (baseURL = 'http://localhost:3000/api') => {
+const axiosHook = (baseURL = import.meta.env.VITE_BACKEND_BASE_URL) => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
 
@@ -53,6 +53,10 @@ const axiosHook = (baseURL = 'http://localhost:3000/api') => {
     async (endpoint, id) => sendRequest({ url: `${endpoint}/${id}`, method: 'DELETE' }),
     [sendRequest]
   );
+  const verifyTokenInfo = useCallback(
+    async (endpoint) => sendRequest({url : `${endpoint}`,method:"GET"}),
+    [sendRequest]
+  )
 
   return {
     loading,
@@ -61,6 +65,7 @@ const axiosHook = (baseURL = 'http://localhost:3000/api') => {
     addNewData,
     updateData,
     deleteData,
+    verifyTokenInfo
   };
 };
 

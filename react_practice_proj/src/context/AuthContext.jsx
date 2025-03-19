@@ -1,5 +1,6 @@
-import React, { useState, useEffect, createContext } from 'react';
-import axios from 'axios';
+import React, { useState, useEffect, createContext } from "react";
+import axios from "axios";
+import axiosHook from "../custom-hooks/axios-hook";
 
 /**
  * useContext will be used when you sharing same information to the different children or if children triggered some action and
@@ -15,75 +16,61 @@ const AuthContext = createContext({
   error: null,
   loading: true,
 });
-  
+
 export function AuthProvider({ children }) {
-  const [isLoggedIn, setIsLoggedIn] = useState(localStorage.getItem("token") ? true : false);
+  const [isLoggedIn, setIsLoggedIn] = useState(
+    localStorage.getItem("token") ? true : false
+  );
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
+  const { verifyTokenInfo } = axiosHook();
+
   const LOGIN_URL = "http://localhost:3000/api";
-
-  const authAxios = axios.create({
-    baseURL: LOGIN_URL,
-  });
-
 
   useEffect(() => {
     const verifyToken = async () => {
       const token = localStorage.getItem("token");
 
-      if(!token){
+      if (!token) {
         setLoading(false);
-        return
+        return;
       }
 
-      try{
-       await authAxios.get(`${LOGIN_URL}/verify-token`, {
-          headers: {
-            "Authorization": `Bearer ${localStorage.getItem("token")}`,
-            "Content-Type": "application/json",
-          },
-        }).then((res) => {
-          if (res.data.success) {
-            setUser(res.data.user);
-            setIsLoggedIn(true);
-          } else {
-            // Token is invalid
-            localStorage.removeItem("token");
-            setIsLoggedIn(false);
-            setUser(null);
-          }
-        }).catch((err) => {
+      try {
+        const response = await verifyTokenInfo("/verify-token");
+        if (response.success) {
+          setUser(res.data.user);
+          setIsLoggedIn(true);
+        } else {
+          // Token is invalid
           localStorage.removeItem("token");
           setIsLoggedIn(false);
           setUser(null);
-        });
-
-
-      }catch(err){
+        }
+      } catch (err) {
         setError(err.message);
         setIsLoggedIn(false);
         setUser(null);
         // throw err;
-      }finally {
+      } finally {
         setLoading(false);
       }
-    }
+    };
     verifyToken();
   }, []);
-  
-  const loginHandler = async (user) => {
 
+  const loginHandler = async (user) => {
     console.log("came to login handler");
     try {
       // setIsLoggedIn(true);
-      
+
       const response = await axios.post(`${LOGIN_URL}/login`, {
         userName: user.userName,
-        password: user.password
+        password: user.password,
       });
-      
+
       if (response.data.success) {
         setError(null);
         localStorage.setItem("token", response.data.token);
@@ -97,18 +84,20 @@ export function AuthProvider({ children }) {
       }
     } catch (err) {
       setIsLoggedIn(false);
-      setError(err.response?.data?.message || err.message || "An error occurred");
+      setError(
+        err.response?.data?.message || err.message || "An error occurred"
+      );
       console.log(err.response?.data?.message || err.message);
       return null;
     }
   };
-  
+
   const logoutHandler = async () => {
-      localStorage.removeItem("token");
-      setIsLoggedIn(false);
-      setUser(null);
+    localStorage.removeItem("token");
+    setIsLoggedIn(false);
+    setUser(null);
   };
-  
+
   const contextValue = {
     isLoggedIn,
     loginHandler,
@@ -117,12 +106,12 @@ export function AuthProvider({ children }) {
     error,
     loading,
   };
-  
+
   return (
     <AuthContext.Provider value={contextValue}>
       {!loading && children}
     </AuthContext.Provider>
   );
 }
-  
+
 export default AuthContext;
