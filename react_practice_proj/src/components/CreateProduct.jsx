@@ -3,6 +3,7 @@ import ProductsContext from "../context/ProductsContext";
 import { useDispatch } from "react-redux";
 import {addProduct} from '../store/productSlice';
 import axiosHook from '../custom-hooks/axios-hook';
+import {jwtDecode} from 'jwt-decode';
 
 
 function CreateProduct(props){
@@ -16,13 +17,18 @@ function CreateProduct(props){
     })
     const {addNewData} = axiosHook();
 
+
    let  addNewProduct = async (eve) =>{
+
+    const decodeToken = jwtDecode(localStorage.getItem('token'));
+
     eve.preventDefault();
         let item = {
             name : product?.pName,
             description : product?.pDesc,
             price : Number(product?.pPrice),
-            isAvailable : Boolean(product?.isAvailable)
+            isAvailable : Boolean(product?.isAvailable),
+            userId :decodeToken.id
         }
         // props.newProduct(item);
         // setProduct({

@@ -4,8 +4,8 @@ const Product = db.Products;
 const sequelize = db.sequelize;
 
 
-const AddProduct = async (req, res) => {
-  const { name, description, price, isAvailable } = req.body;
+const AddProduct = async (req, res,next) => {
+  const { name, description, price, isAvailable,userId } = req.body;
   if (!name || !price) {
     return res.status(400).json({
       success: false,
@@ -18,8 +18,10 @@ const AddProduct = async (req, res) => {
     description,
     price,
     is_Available: isAvailable,
+    userId
   });
 
+  next()
   return res.status(200).json({
     success: true,
     message: "Product created successfully",

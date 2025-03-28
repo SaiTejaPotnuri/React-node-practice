@@ -2,8 +2,7 @@ const jwt = require('jsonwebtoken');
 const pool = require('../utils/db.connection');
 
 exports.VerifyToken = (req, res, next) => {
-    console.log("verify token api called", req.url);
-  
+    
     const authHeader = req.headers['authorization'];
     if (!authHeader || !authHeader.startsWith('Bearer ')) {
       return res.status(401).json({
@@ -22,9 +21,7 @@ exports.VerifyToken = (req, res, next) => {
         });
       }
   
-      const { id, name } = decoded;
-      console.log(decoded, "decoded");
-      
+      const { id, name } = decoded;      
       if (!id || !name) {
         return res.status(401).json({
           success: false,
@@ -34,7 +31,7 @@ exports.VerifyToken = (req, res, next) => {
   
       try {
 
-        const [rows, fields] = await pool.execute("SELECT * FROM users WHERE userId = ?", [id || 0]);
+        const [rows, fields] = await pool.execute("SELECT * FROM users WHERE id = ?", [id || 0]);
         let user = rows[0];
         if (!user) {
           return res.status(401).json({

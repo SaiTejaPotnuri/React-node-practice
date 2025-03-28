@@ -17,6 +17,8 @@
     "cors": "^2.8.5",
     "express": "^4.21.2",
     "jsonwebtoken": "^9.0.2",
+    "mongoose": "^8.13.0",
+    "mongosh": "^2.4.2",
     "mysql2": "^3.13.0",
     "sequelize": "^6.37.6"
   }

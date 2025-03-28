@@ -9,7 +9,7 @@ import axiosHook from "../custom-hooks/axios-hook";
  */
 
 const AuthContext = createContext({
-  isLoggedIn: false,
+  isLoggedIn: localStorage.getItem('token') ? true : false,
   loginHandler: async (user) => Promise.resolve(null),
   logoutHandler: () => {},
   user: null,
@@ -41,7 +41,7 @@ export function AuthProvider({ children }) {
       try {
         const response = await verifyTokenInfo("/verify-token");
         if (response.success) {
-          setUser(res.data.user);
+          setUser(response.user);
           setIsLoggedIn(true);
         } else {
           // Token is invalid
@@ -49,9 +49,10 @@ export function AuthProvider({ children }) {
           setIsLoggedIn(false);
           setUser(null);
         }
-      } catch (err) {
+      }catch(err) {
         setError(err.message);
         setIsLoggedIn(false);
+        localStorage.removeItem("token");
         setUser(null);
         // throw err;
       } finally {
@@ -97,9 +98,9 @@ export function AuthProvider({ children }) {
     setIsLoggedIn(false);
     setUser(null);
   };
-
+  console.log(isLoggedIn,"isLogged")
   const contextValue = {
-    isLoggedIn,
+    isLoggedIn ,
     loginHandler,
     logoutHandler,
     user,

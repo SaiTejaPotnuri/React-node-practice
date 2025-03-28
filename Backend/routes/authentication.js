@@ -12,6 +12,7 @@ const router = express.Router();
 
 router.post('/api/login',validateLoginInput,AuthController);
 
+
 router.get("/api/verify-token",VerifyToken,VarifyTokenController);
 
 module.exports = router;

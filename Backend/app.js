@@ -24,7 +24,14 @@ const express = require("express");
 const cors = require('cors');
 const app = express();
 const port = 3000;
+const routes = require("./routes/mainroute");
+const db = require("./utils/db.connection");
+const dbMongoose = require("./utils/mongoose.db.connection")
+const dbSequelize = require("./models/sequelizeModelIndex");
+
+
 app.use(express.json());
+
 
 
 app.use(cors({
@@ -34,10 +41,6 @@ app.use(cors({
     credentials: true, // If you need cookies
 }));
 
-const routes = require("./routes/mainroute");
-const db = require("./utils/db.connection");
-const dbSequelize = require("./models/sequelizeModelIndex");
-
 routes.forEach(route => app.use(route));
 
 
@@ -45,6 +48,7 @@ app.use('/', (req, res) => {
     console.log("endpoint not exist", req.url);
     res.status(404).send("endpoint not exist");
 })
+
 
 
 

@@ -5,7 +5,7 @@ const jwt = require('jsonwebtoken');
 exports.AuthController = async (req, res) => {
     const { userName, password } = req.body;
         
-        let [rows,fields] = await pool.execute("select * from users where username = ?",[userName]);
+        let [rows,fields] = await pool.execute("select * from users where email = ?",[userName]);
         let user = rows[0]
 
        if(!user){
@@ -24,7 +24,7 @@ exports.AuthController = async (req, res) => {
             message : "Invalid password , Please try again",
         })
        }
-       const token = jwt.sign({ id: user.userId,name : user.username }, "imaginnovate", { expiresIn: '1h' });
+       const token = jwt.sign({ id: user.id,name : user.name,email:user.email }, "imaginnovate", { expiresIn: '1h' });
         return res.status(200).json({ 
             success : true,
             token : token,

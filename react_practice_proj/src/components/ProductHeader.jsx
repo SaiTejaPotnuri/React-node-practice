@@ -5,7 +5,6 @@ import React from "react";
 import { Link, NavLink } from "react-router-dom";
 
 const ProductHeader = (props) => {
-  console.log("product header enabled")
   const [activePage, setActivePage] = useState("");
 
   let providerContext = useContext(Authenticate);
@@ -36,8 +35,8 @@ const ProductHeader = (props) => {
                 to="/dashboard/add_products"
                 className={`nav-link ${
                   activePage === "Add Product"
-                    ? "active fw-bold text-white"
-                    : "text-secondary opacity-75"
+                    ? "active fw-bold text-blue"
+                    : "text-white"
                 }`}
                 onClick={() => navChanged("Add Product")}
                 style={{ cursor: "pointer" }}
@@ -50,8 +49,8 @@ const ProductHeader = (props) => {
                 to="/dashboard/list_products"
                 className={`nav-link ${
                   activePage === "Products"
-                    ? "active fw-bold text-white"
-                    : "text-secondary opacity-75"
+                    ? "active fw-bold text-blue"
+                    : "text-white "
                 }`}
                 onClick={() => navChanged("Products")}
                 style={{ cursor: "pointer" }}
@@ -64,8 +63,8 @@ const ProductHeader = (props) => {
                 to="/dashboard/contact_details"
                 className={`nav-link ${
                   activePage === "ContactDetails"
-                    ? "active fw-bold text-white"
-                    : "text-secondary opacity-75"
+                    ? "active fw-bold text-blue"
+                    : "text-white"
                 }`}
                 onClick={() => navChanged("ContactDetails")}
                 style={{ cursor: "pointer" }}

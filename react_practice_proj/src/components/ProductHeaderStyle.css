@@ -1,4 +1,8 @@
 .nav-link:hover {
-    color: white !important;
-    opacity: 1 !important;
+    color: #3366cc !important;
+    opacity: 0.8 !important;
 }
+.navbar-nav .show > .nav-link, .navbar-nav .nav-link.active {
+    color: #3366cc;
+}
+
