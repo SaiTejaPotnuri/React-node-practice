@@ -30,7 +30,8 @@ const dbMongoose = require("./utils/mongoose.db.connection")
 const dbSequelize = require("./models/sequelizeModelIndex");
 
 
-app.use(express.json());
+app.use(express.json()); 
+app.use(express.urlencoded({ extended: true })); 
 
 
 

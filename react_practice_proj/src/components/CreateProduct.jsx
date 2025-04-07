@@ -11,11 +11,12 @@ function CreateProduct(props){
     let page = useContext(ProductsContext);
     let [product,setProduct] = useState({
         pName : "",
+        pImage : "",
         pPrice : 0,
         pDesc : "",
         isAvailable : false
     })
-    const {addNewData} = axiosHook();
+    const {addNewFormData} = axiosHook();
 
 
    let  addNewProduct = async (eve) =>{
@@ -25,11 +26,20 @@ function CreateProduct(props){
     eve.preventDefault();
         let item = {
             name : product?.pName,
+            image : product?.pImage,
             description : product?.pDesc,
             price : Number(product?.pPrice),
             isAvailable : Boolean(product?.isAvailable),
             userId :decodeToken.id
         }
+
+        const formData = new FormData();
+        formData.append('name', product?.pName);
+        formData.append("image", product?.pImage);
+        formData.append('description', product?.pDesc);
+        formData.append('price',  Number(product?.pPrice));
+        formData.append('isAvailable', Boolean(product?.isAvailable));
+        formData.append('userId', decodeToken.id);
         // props.newProduct(item);
         // setProduct({
         //     pName : "",
@@ -44,10 +54,11 @@ function CreateProduct(props){
         // we use below cod for handling json data
         // const response = await useHttpHook.createData(`${BASE_URL}/products`,item);
 
-          const response = await addNewData('/products',item);
+          const response = await addNewFormData('/products',formData);
 
         if(response.success){
             item.id = response.name;
+            item.image = response.imageurl;
             page.onAddProduct(item);
             dispatch(addProduct(item));
         }
@@ -66,6 +77,17 @@ function CreateProduct(props){
             }
         })
     }
+
+
+    let updateImage = (eve) =>{
+        setProduct((prevState) => {
+            return {
+                ...prevState,
+                pImage : eve.target.files[0]
+            }
+        })
+    }
+
 
     let updatePrice = (eve) => {
         setProduct((prevState) => {
@@ -119,6 +141,12 @@ function CreateProduct(props){
                         <input className="form-check-input" checked={product.isAvailable} onChange={updateAvilability} type="checkbox" id="isAvailable" />
                         <label className="form-check-label" htmlFor="isAvailable">Available</label>
                     </div>
+
+                    <div className="mb-3">
+                        <label htmlFor="productImage" className="form-label">Product Image</label>
+                        <input type="file"  onChange={updateImage} className="form-control" id="productImage" required />
+                    </div>
+
                     <div className=" w-full d-flex align-items-center justify-content-end">
                     <button type="submit" className="btn btn-primary">Add Product</button>
                     </div>

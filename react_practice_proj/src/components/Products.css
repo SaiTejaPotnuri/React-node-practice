@@ -5,3 +5,8 @@
     transform: translateY(-50%);
     cursor: pointer;
 }
+.logo-cont{
+    width: 2rem;
+    height: 2.5rem;
+    object-fit: fill;
+}

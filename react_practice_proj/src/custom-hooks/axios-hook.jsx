@@ -9,19 +9,28 @@ const axiosHook = (baseURL = import.meta.env.VITE_BACKEND_BASE_URL) => {
     async (config) => {
       setLoading(true);
       setError(null);
-
+  
       try {
+        let headers = {
+          Authorization: `Bearer ${localStorage.getItem("token")}`,
+          ...config.headers,
+        };
+  
+        if (!(config.data instanceof FormData)) {
+          headers["Content-Type"] = "application/json";
+        }else{
+          headers["Content-Type"] = "multipart/form-data";
+        }
+  
         const response = await axios({
           baseURL,
           ...config,
-          headers: {
-            'Authorization': `Bearer ${localStorage.getItem('token')}`,
-            'Content-Type': 'application/json',
-          },
+          headers, 
         });
+  
         return response.data;
       } catch (err) {
-        if (axios.isCancel(err)) { // Use axios.isCancel for cancel check
+        if (axios.isCancel(err)) {
           return;
         }
         const errorMessage = err.response?.data?.message || err.message;
@@ -31,9 +40,9 @@ const axiosHook = (baseURL = import.meta.env.VITE_BACKEND_BASE_URL) => {
         setLoading(false);
       }
     },
-    [baseURL] 
+    [baseURL]
   );
-
+  
   const fetchData = useCallback(
     async (endpoint) => sendRequest({ url: `${endpoint}`, method: 'GET' }),
     [sendRequest]
@@ -44,8 +53,13 @@ const axiosHook = (baseURL = import.meta.env.VITE_BACKEND_BASE_URL) => {
     [sendRequest]
   );
 
+  const addNewFormData = useCallback(
+    async (endpoint, data) => sendRequest({ url: `${endpoint}`, method: 'POST', data }),
+    [sendRequest]
+  );
+
   const updateData = useCallback(
-    async (endpoint, id, data) => sendRequest({ url: `${endpoint}/${id}`, method: 'PUT', data }),
+    async (endpoint, id, data) => sendRequest({ url: `${endpoint}/${id}`, method: 'PUT', data }) 
     [sendRequest]
   );
 
@@ -65,7 +79,8 @@ const axiosHook = (baseURL = import.meta.env.VITE_BACKEND_BASE_URL) => {
     addNewData,
     updateData,
     deleteData,
-    verifyTokenInfo
+    verifyTokenInfo,
+    addNewFormData
   };
 };
 

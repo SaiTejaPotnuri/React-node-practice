@@ -15,6 +15,10 @@ module.exports = (sequelize, DataTypes) => {
       field: "name",
       comment: "Product name",
     },
+    imageurl: {
+       type : DataTypes.STRING,
+       allowNull : true
+    },
     description: {
       type: DataTypes.TEXT,
       allowNull: true,

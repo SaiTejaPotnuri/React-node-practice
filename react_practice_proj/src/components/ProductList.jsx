@@ -6,7 +6,6 @@ import ProductsContext from "../context/ProductsContext";
 import { useLocation } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import { deleteProduct } from "../store/productSlice";
-import axios from "axios";
 import axiosHook from "../custom-hooks/axios-hook";
 
 function ProductList() {
@@ -210,13 +209,19 @@ function ProductList() {
           <ul className="list-group">
             <li className="list-group-item mb-1" key="header">
               <div className="row">
+                
+                <div className="col-2">
+                    <div className="fw-bold">
+                          Product Image
+                    </div>
+                </div>
                 <div className="col-3">
                   <div className="fw-bold">Product Name</div>
                 </div>
                 <div className="col-3">
                   <div className="fw-bold">Description</div>
                 </div>
-                <div className="col-2">
+                <div className="col-1">
                   <div className="fw-bold">Price</div>
                 </div>
                 <div className="col-2">
@@ -252,13 +257,22 @@ function ProductList() {
                   }}
                 >
                   <div className="row">
+                    <div className="col-2">
+                           <div className="logo-cont">
+                             <img
+                               src={product.pImage}
+                               alt="No Logo"
+                               className="img-fluid"
+                             />
+                           </div>
+                    </div>
                     <div className="col-3">
                       <div className="fw-bold">{product.pName}</div>
                     </div>
                     <div className="col-3">
                       <div>{product.pDesc}</div>
                     </div>
-                    <div className="col-2">${product.pPrice}</div>
+                    <div className="col-1">${product.pPrice}</div>
                     <div className="col-2">
                       <span
                         className={

@@ -11,6 +11,12 @@ const productSchema = new mongoose.Schema({
         minlength : 3,
         maxlength : 50
     },
+    imageurl : {
+        type : String,
+        required : false,
+        trim : true,
+        unique : false,
+    },
     description :{
         type : String,
         required : false,
@@ -30,6 +36,11 @@ const productSchema = new mongoose.Schema({
         required : true,
         unique : false,
         default : false
+    },
+    seqProductId : {
+        type : Number,
+        required : true,
+        unique : false,
     },
     userId: {
         type: mongoose.Schema.Types.ObjectId,

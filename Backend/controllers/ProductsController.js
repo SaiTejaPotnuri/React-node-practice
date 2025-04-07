@@ -6,6 +6,8 @@ const sequelize = db.sequelize;
 
 const AddProduct = async (req, res,next) => {
   const { name, description, price, isAvailable,userId } = req.body;
+  
+  const file = req.file;
   if (!name || !price) {
     return res.status(400).json({
       success: false,
@@ -13,14 +15,27 @@ const AddProduct = async (req, res,next) => {
     });
   }
 
+  if (!file) {
+    return res.status(400).json({
+      success: false,
+      message: "Product image is required",
+    });
+  }
+
+  const imageurl = file.location;
+
+
   const newProduct = await Product.create({
     name,
+    imageurl,
     description,
     price,
     is_Available: isAvailable,
     userId
   });
 
+  req.body.seqProductId = newProduct.id
+  req.body.imageurl = newProduct.imageurl
   next()
   return res.status(200).json({
     success: true,
@@ -29,11 +44,14 @@ const AddProduct = async (req, res,next) => {
   });
 };
 
-const GetProduct = async (req, res) => {
+const GetProduct = async (req, res,next) => {
+  const userId = req.user.id;
   try {
     const productsList = await Product.findAll({
+        where: { userId },
         attributes: [
-          ['id', 'pId'],        
+          ['id', 'pId'],  
+          ['imageurl', 'pImage'],      
           ['name', 'pName'],    
           ['description', 'pDesc'], 
           ['price', 'pPrice'],  
@@ -43,12 +61,14 @@ const GetProduct = async (req, res) => {
       });
 
         if (productsList.length > 0) {
+          next()
         return res.status(200).json({
             success: true,
             message: "Products fetched successfully",
             products: productsList,
         });
         } else {
+          next()
         return res.status(200).json({
             success: true,
             message: "No products found",
@@ -69,7 +89,7 @@ const UpdateProduct = async (req, res) => {
   // res.send("update product api called");
 };
 
-const DeleteProduct = async (req, res) => {
+const DeleteProduct = async (req, res,next) => {
   try {
     const id = req.params.id;
     
@@ -77,6 +97,7 @@ const DeleteProduct = async (req, res) => {
       where: { id: id }
     });
       console.log("affectedRows", affectedRows);
+      next()
     if (affectedRows > 0) {
       return res.status(200).json({
         success: true,
