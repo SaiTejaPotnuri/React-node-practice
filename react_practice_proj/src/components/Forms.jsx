@@ -3,9 +3,13 @@ import { useContext, useState,useEffect } from "react";
 import Authenticate from "../context/AuthContext";
 import Input from "../reuseble-components/Input";
 import { useNavigate } from "react-router-dom";
+import OtpVerificationModal from "../models/OtpVerificationModel";
 function Forms(props) {
   //   let [userName,setUserName] = useState('');
   //   let [password,setPassword] = useState('');
+
+  let [userData , setUserData] = useState({});
+  let [showOTPModel, setShowOTPModel] = useState(false);
 
   // like above for all Inputs we make use of useState instead of it we will create single useState for all inputs
   const navigate = useNavigate();
@@ -59,19 +63,32 @@ function Forms(props) {
     // console.log("user details :",user)
     // props.submitForm(userInput.userName)
 
-    const isValidUser = await auth.loginHandler(user);
+    const validUser = await auth.loginHandler(user);
 
-    if (isValidUser) {
+    if (validUser) {
+      console.log("valid user", validUser);
+      const sendOtpResponse = await auth.sendOtp(validUser);
+      setUserData(validUser);
+      setShowOTPModel(true);
           //clear all values of the form
-      updateUserInput({
+      // updateUserInput({
+      //   userName: "",
+      //   password: "",
+      // });
+      // navigate("/dashboard", { replace: true });
+    }
+  };
+
+
+  let onOtpVerfication = () =>{
+    setShowOTPModel(false);
+     updateUserInput({
         userName: "",
         password: "",
       });
-      navigate("/dashboard", { replace: true });
-    }
+    navigate("/dashboard", { replace: true });
+  }
 
-
-  };
 
   // for 2 way binding we will assign state value to the form value like as userName and password
   // for checkbox instead of value attribute we use checked attribute
@@ -120,6 +137,15 @@ function Forms(props) {
           </div>
         </div>
       </div>
+
+      {showOTPModel && (
+        <OtpVerificationModal
+          showOTPModel={showOTPModel}
+          user={userData}
+          hideOTPModel={() => setShowOTPModel(false)}
+          onOTPVerified={onOtpVerfication}
+        />
+      )}
     </>
   );
 }

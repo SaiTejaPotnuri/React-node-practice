@@ -9,9 +9,11 @@ import axiosHook from "../custom-hooks/axios-hook";
  */
 
 const AuthContext = createContext({
-  isLoggedIn: localStorage.getItem('token') ? true : false,
+  isLoggedIn: localStorage.getItem("token") ? true : false,
   loginHandler: async (user) => Promise.resolve(null),
   logoutHandler: () => {},
+  verifyOtp: async (user) => Promise.resolve(null),
+  sendOtp: async (user) => Promise.resolve(null),
   user: null,
   error: null,
   loading: true,
@@ -49,7 +51,7 @@ export function AuthProvider({ children }) {
           setIsLoggedIn(false);
           setUser(null);
         }
-      }catch(err) {
+      } catch (err) {
         setError(err.message);
         setIsLoggedIn(false);
         localStorage.removeItem("token");
@@ -61,6 +63,72 @@ export function AuthProvider({ children }) {
     };
     verifyToken();
   }, []);
+
+  const sendOtp = async (data) => {
+    console.log(data)
+    let sendPayload = {
+      action: "send",
+      email: data?.user?.name,
+    };
+    console.log(sendPayload);
+    try {
+      const sendResponse = await axios.post(
+        `${LOGIN_URL}/verify-otp`,
+        sendPayload,
+        {
+          headers: {
+            "Content-Type": "application/json",
+            'Authorization': `Bearer ${data?.userInfo?.token}`,
+          },
+        }
+      );
+
+      if (sendResponse) {
+        console.log(sendResponse, "OTP sent successfully");
+      }
+    } catch (err) {
+      console.log("OTP sending failed.");
+    }
+  }
+
+  const verifyOtp = async (data) => {
+    console.log(data.userInfo.user);
+
+    let verifyPayload = {
+      action: "verify",
+      email: data?.userInfo?.user?.name,
+      otp: data?.otp,
+    };
+
+    try {
+      const response = await axios.post(
+        `${LOGIN_URL}/verify-otp`,
+        verifyPayload,
+        {
+          headers: {
+            "Content-Type": "application/json",
+            'Authorization': `Bearer ${data?.userInfo?.token}`,
+          },
+        }
+      );
+
+      if (response?.data?.data?.verified) {
+        setError(null);
+        localStorage.setItem("token", data?.userInfo.token);
+        console.log(response?.data?.data?.verified , "after")
+        setIsLoggedIn(true);
+        return true;
+      }else{
+        console.log("came to else.");
+        return false
+      }
+    } catch (err) {
+      setError( "OTP verification failed.");
+      setIsLoggedIn(false);
+      console.log("came catch",err)
+      return false;
+    }
+  };
 
   const loginHandler = async (user) => {
     console.log("came to login handler");
@@ -74,10 +142,10 @@ export function AuthProvider({ children }) {
 
       if (response.data.success) {
         setError(null);
-        localStorage.setItem("token", response.data.token);
-        setUser(response.data.user);
-        setIsLoggedIn(true);
-        return response.data.user;
+        // localStorage.setItem("token", response.data.token);
+        // setUser(response.data.user);
+        // setIsLoggedIn(true);
+        return response.data;
       } else {
         setError(response.data.message || "Login failed");
         setIsLoggedIn(false);
@@ -98,11 +166,13 @@ export function AuthProvider({ children }) {
     setIsLoggedIn(false);
     setUser(null);
   };
-  console.log(isLoggedIn,"isLogged")
+  console.log(isLoggedIn, "isLogged");
   const contextValue = {
-    isLoggedIn ,
+    isLoggedIn,
     loginHandler,
     logoutHandler,
+    verifyOtp,
+    sendOtp,
     user,
     error,
     loading,
