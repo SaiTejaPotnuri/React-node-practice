@@ -14,6 +14,7 @@ const ProductsDashboard = () => {
     if (path === "add_products") return "Add Product";
     if (path === "list_products") return "Products";
     if (path === "contact_details") return "ContactDetails";
+    if(path === "practice1") return "Practice1";
     return "Add Product"; // Default
   };
 

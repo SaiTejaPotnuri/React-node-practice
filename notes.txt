@@ -1,6 +1,119 @@
 
 
 
+Link vs NavLink :
+    1. In generalley we use anchor tag for links in react if we use it page will be reload every time we clicked
+       to overcome that we use Link 
+       example :
+                <Link to="/path" />Home</Link>
+    2. NavLink we use NavLink instead of Link because we use to style the Menu or sideBar selected router should be styled
+        like active class should add , Link will not allow to accept the classNames or styles So we use NavLink
+
+
+
+
+useState Vs useReducer :
+
+    1.Both we use for storage purpose but
+      useState() is used to modifythe data to the stateVariable
+      Here is difference :
+        where as useReducer(state,action) will modify the data and also we can specify action we would like to do example
+        i wan to do increment and decrement 
+        2 buttons with useState increment and decrement we make call of 2 methods to change the state value like increment and decrement
+        In reducer you may use in single method and you will get the type of action you want to do 
+
+
+CSS vs module.css :
+    1. In react we use module.css for each component because css file classnames will act as globally So if you create
+        same classname in different css file there will be conflict between that while run time styles will be lost 
+        So, if we want to use classNames component wise we use to maintain modue.css and if globally same styles we use 
+        css files in react
+
+        AS a module create file like :
+            Alpha.module.css
+        Use as in Component :
+            import styles from './alpha.module.css'
+          In any tag like :
+           <p classname={styles.header} > Welcome </p>
+
+
+
+Props :
+    1. I created a student component So here we can assign models 
+       like creating interfaces(models) or you may use like below(Student component)
+
+       Student.propTypes ={
+           name : PropTypes.string ,
+           age : PropTypes.number,
+           IsPresent : PropTypes.bool
+       }
+
+    2. Default values :
+
+        Student.defaultProps ={
+            name : "John",
+            age : 20,
+            IsPresent : false
+        }
+
+Object states :
+    1. If we are using object state like
+         let [car,setCar] = useState({
+            name : "",
+            color:"",
+            brand:""
+         })
+
+         we need use like car.name , car.color
+         while we assigning the values we use like below
+
+         we need each key with function like
+         let updateCarName = (event) =>{
+                setCar({...car,name : event.target.value})
+         }
+
+         so we use spread operator like ...car because if we assign only name then remaining objects data we loose 
+         so we need same object and new on so name has previously some data and again with key we are specifying So newest value will be updated
+
+
+Arrays state :
+
+    1.  setTodos(todos => {
+            return [...todos, {}]
+        });
+
+        setTodos(todos => {
+            const newTodos = todos.filter(todo => todo.id !== id);
+            return newTodos
+        });
+
+
+useContext :
+
+    1. useContext is hook that is used share the values or data to the different components with multiple level without using props
+
+useRef :
+    1. It is used to make or handle the rendering by taking reference of a data and you may change the data 
+    2. If we dont want to render the component even with value change then we may use useRef
+        const ref = useRef(0)
+
+        //In some function
+            ref.current++;
+
+            you may see the updated values in ref.current
+
+
+    example 2 :
+        if we use for any element like we may use
+            let inputRef = useRef(null)
+         <input type="text ref={inputRef} />
+
+        //In any function
+        you may do any action or any style for it like below
+
+            inputRef.current.focus();
+            inputRef.current.style.backgroundColor = "Black" etc..
+
 
 utils
     - axios

@@ -3,6 +3,7 @@ import React, { Suspense, lazy } from "react";
 import { createBrowserRouter, createRoutesFromElements, Route, Navigate } from "react-router-dom";
 import ProtectedRoute from "./ProtectedRoute";
 import RootLayout from "./RootLayout";
+import Practice1 from "../components/Practice/practice1";
 
 // Lazy load components instead of direct imports
 const Forms = lazy(() => import("../components/Forms"));
@@ -57,6 +58,14 @@ const AppRouting = createBrowserRouter(
           element={
             <Suspense fallback={<LoadingFallback />}>
               <ContactDetials />
+            </Suspense>
+          }
+        />
+         <Route
+          path="practice1"
+          element={
+            <Suspense fallback={<LoadingFallback />}>
+              <Practice1 />
             </Suspense>
           }
         />

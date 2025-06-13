@@ -72,6 +72,20 @@ const ProductHeader = (props) => {
                 Contact
               </NavLink>
             </li>
+            <li className="nav-item">
+              <NavLink
+                to="/dashboard/practice1"
+                className={`nav-link ${
+                  activePage === "Practice1"
+                    ? "active fw-bold text-blue"
+                    : "text-white"
+                }`}
+                onClick={() => navChanged("Practice1")}
+                style={{ cursor: "pointer" }}
+              >
+                Practice 1
+              </NavLink>
+            </li>
           </ul>
           <div className="signOut">
             <svg
