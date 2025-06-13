@@ -30,8 +30,8 @@ exports.AuthController = async (req, res) => {
             token : token,
             message : "logged in  successfully",
             user : {
-                id : user.userId,
-                name : user.username
+                id : user.id,
+                name : user.email
             }
         });
     
