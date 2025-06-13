@@ -3,6 +3,7 @@ const { AuthController}  = require("../controllers/AuthController");
 const  { validateLoginInput }  = require("../middleware/authMiddleWare")
 const { VarifyTokenController} = require("../controllers/VerifyTokenController");
 const { VerifyToken } = require("../middleware/tokenValidationMiddleWare");
+const {OTPController} = require("../controllers/OTPController");
 
 
 const router = express.Router();
@@ -14,5 +15,7 @@ router.post('/api/login',validateLoginInput,AuthController);
 
 
 router.get("/api/verify-token",VerifyToken,VarifyTokenController);
+
+router.post('/api/verify-otp',OTPController);
 
 module.exports = router;
