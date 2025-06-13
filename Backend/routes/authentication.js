@@ -16,6 +16,8 @@ router.post('/api/login',validateLoginInput,AuthController);
 
 router.get("/api/verify-token",VerifyToken,VarifyTokenController);
 
-router.post('/api/verify-otp',OTPController);
+
+router.post('/api/verify-otp',VerifyToken,OTPController);
+
 
 module.exports = router;
