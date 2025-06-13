@@ -70,7 +70,6 @@ export function AuthProvider({ children }) {
       action: "send",
       email: data?.user?.name,
     };
-    console.log(sendPayload);
     try {
       const sendResponse = await axios.post(
         `${LOGIN_URL}/verify-otp`,
@@ -78,13 +77,13 @@ export function AuthProvider({ children }) {
         {
           headers: {
             "Content-Type": "application/json",
-            'Authorization': `Bearer ${data?.userInfo?.token}`,
+            'Authorization': `Bearer ${data?.token}`,
           },
         }
       );
 
       if (sendResponse) {
-        console.log(sendResponse, "OTP sent successfully");
+        console.log( "OTP sent successfully");
       }
     } catch (err) {
       console.log("OTP sending failed.");

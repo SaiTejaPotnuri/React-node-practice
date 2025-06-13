@@ -1,5 +1,5 @@
 import "./formStyle.css";
-import { useContext, useState,useEffect } from "react";
+import { useContext, useState, useEffect } from "react";
 import Authenticate from "../context/AuthContext";
 import Input from "../reuseble-components/Input";
 import { useNavigate } from "react-router-dom";
@@ -8,7 +8,7 @@ function Forms(props) {
   //   let [userName,setUserName] = useState('');
   //   let [password,setPassword] = useState('');
 
-  let [userData , setUserData] = useState({});
+  let [userData, setUserData] = useState({});
   let [showOTPModel, setShowOTPModel] = useState(false);
 
   // like above for all Inputs we make use of useState instead of it we will create single useState for all inputs
@@ -22,9 +22,9 @@ function Forms(props) {
   let auth = useContext(Authenticate);
 
   useEffect(() => {
-    const isAuthenticated = localStorage.getItem('token') === 'true';
+    const isAuthenticated = localStorage.getItem("token") === "true";
     if (isAuthenticated || auth.isLoggedIn) {
-      navigate('/dashboard', { replace: true });
+      navigate("/dashboard", { replace: true });
     }
   }, [auth.isLoggedIn, navigate]);
   let handleUserName = (eve) => {
@@ -53,7 +53,6 @@ function Forms(props) {
   let submitForm = async (eve) => {
     // console.log("submit form event",eve);
 
-    
     // the below we are calling preventDefault() to prevent the for make a default behaviour of the submit form to reload the page
     eve.preventDefault();
     let user = {
@@ -67,10 +66,17 @@ function Forms(props) {
 
     if (validUser) {
       console.log("valid user", validUser);
-      const sendOtpResponse = await auth.sendOtp(validUser);
+
+      try {
+        const sendOtpResponse = await auth.sendOtp(validUser);
+        setShowOTPModel(true);
+      } catch (err) {
+        console.log(err);
+        setShowOTPModel(false);
+      }
+
       setUserData(validUser);
-      setShowOTPModel(true);
-          //clear all values of the form
+      //clear all values of the form
       // updateUserInput({
       //   userName: "",
       //   password: "",
@@ -79,16 +85,14 @@ function Forms(props) {
     }
   };
 
-
-  let onOtpVerfication = () =>{
+  let onOtpVerfication = () => {
     setShowOTPModel(false);
-     updateUserInput({
-        userName: "",
-        password: "",
-      });
+    updateUserInput({
+      userName: "",
+      password: "",
+    });
     navigate("/dashboard", { replace: true });
-  }
-
+  };
 
   // for 2 way binding we will assign state value to the form value like as userName and password
   // for checkbox instead of value attribute we use checked attribute
