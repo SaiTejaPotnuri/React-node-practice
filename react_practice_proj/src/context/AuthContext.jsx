@@ -68,7 +68,7 @@ export function AuthProvider({ children }) {
     console.log(data)
     let sendPayload = {
       action: "send",
-      email: data?.user?.name,
+      phoneNumber: data?.user?.name,
     };
     try {
       const sendResponse = await axios.post(
@@ -95,7 +95,7 @@ export function AuthProvider({ children }) {
 
     let verifyPayload = {
       action: "verify",
-      email: data?.userInfo?.user?.name,
+      phoneNumber: data?.userInfo?.user?.name,
       otp: data?.otp,
     };
 

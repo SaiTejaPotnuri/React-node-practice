@@ -114,11 +114,11 @@ function Forms(props) {
               <Input
                 divClass="form-group mb-3"
                 labelClass="mb-1"
-                type="email"
-                label="Email address"
+                type="text"
+                label="phone number"
                 value={userInput.userName}
                 onChangeHandler={handleUserName}
-                placeholder="Enter email"
+                placeholder="Enter phone number"
                 id="exampleInputEmail1"
               />
 
