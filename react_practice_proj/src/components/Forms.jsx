@@ -8,6 +8,7 @@ function Forms(props) {
   //   let [userName,setUserName] = useState('');
   //   let [password,setPassword] = useState('');
 
+
   let [userData, setUserData] = useState({});
   let [showOTPModel, setShowOTPModel] = useState(false);
 
@@ -66,6 +67,7 @@ function Forms(props) {
 
     if (validUser) {
       console.log("valid user", validUser);
+
 
       try {
         const sendOtpResponse = await auth.sendOtp(validUser);
